@@ -1,7 +1,8 @@
 import React from 'react'
-import { Box, useStdout } from 'ink'
+import { Box } from 'ink'
 import ScoreCard from './score-card'
 import { Game } from '../service/mock-data'
+import useGrid from '../hooks/use-grid'
 
 export default function ScoreGrid({
   games,
@@ -10,18 +11,7 @@ export default function ScoreGrid({
   games: Game[]
   selectedIndex: number
 }) {
-  const { stdout } = useStdout()
-  const terminalWidth = stdout.columns || 80
-
-  const cardMinWidth = 22
-  const cardSpacing = 2
-  const padding = 2
-
-  const availableWidth = terminalWidth - padding * 2
-  const columnsCount = Math.max(
-    1,
-    Math.floor(availableWidth / (cardMinWidth + cardSpacing))
-  )
+  const { columnsCount } = useGrid()
 
   const rows: Game[][] = []
   for (let i = 0; i < games.length; i += columnsCount) {

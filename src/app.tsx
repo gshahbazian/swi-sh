@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Box, Text, useInput, useStdout } from 'ink'
+import { Box, Text, useInput } from 'ink'
 import ScoreGrid from './components/score-grid'
 import GameDetail from './components/game-detail'
 import { Game, generateMockGames, updateGameScores } from './service/mock-data'
 import { BBallSpinner } from './components/bball-spinner'
+import useGrid from './hooks/use-grid'
 
 export default function App({
   refreshInterval = 1000,
@@ -40,18 +41,7 @@ function GamesApp({
   const [games, setGames] = useState(initialGames)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [showDetail, setShowDetail] = useState(false)
-  const { stdout } = useStdout()
-
-  // Calculate columns count same way as ScoreGrid
-  const terminalWidth = stdout.columns || 80
-  const cardMinWidth = 22
-  const cardSpacing = 2
-  const padding = 2
-  const availableWidth = terminalWidth - padding * 2
-  const columnsCount = Math.max(
-    1,
-    Math.floor(availableWidth / (cardMinWidth + cardSpacing))
-  )
+  const { columnsCount } = useGrid()
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null
