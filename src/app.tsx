@@ -33,8 +33,8 @@ export default function App({ refreshInterval = 1000 }: Props) {
     return () => clearInterval(interval)
   }, [refreshInterval])
 
-  // Only enable keyboard input if stdin is a TTY (not when piping)
-  if (process.stdin.isTTY) {
+  // Only enable keyboard input if stdin is a TTY (not when piping) and not in test environment
+  if (process.stdin.isTTY && process.env.NODE_ENV !== 'test') {
     useInput((input, key) => {
       if (showDetail) {
         // In detail view, only handle back navigation
@@ -78,7 +78,7 @@ export default function App({ refreshInterval = 1000 }: Props) {
         </Text>
       </Box>
       <ScoreGrid games={games} selectedIndex={selectedIndex} />
-      {process.stdin.isTTY && (
+      {process.stdin.isTTY && process.env.NODE_ENV !== 'test' && (
         <Box justifyContent="center" marginTop={1}>
           <Text color="gray">
             Use arrow keys to navigate • Press ENTER for details • Press Q to
