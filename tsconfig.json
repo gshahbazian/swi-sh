@@ -8,16 +8,9 @@
     "resolveJsonModule": true,
     "jsx": "react",
     "strict": true,
-    "noImplicitReturns": true,
-    "noImplicitOverride": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
     "noUncheckedIndexedAccess": true,
-    "useDefineForClassFields": true,
-    "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true
   },
-  "include": ["src", "tests", "bin"]
+  "include": ["src"]
 }

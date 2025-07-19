@@ -2,14 +2,42 @@ import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput, useStdout } from 'ink'
 import ScoreGrid from './components/score-grid'
 import GameDetail from './components/game-detail'
-import { generateMockGames, updateGameScores } from './mock-data'
+import { Game, generateMockGames, updateGameScores } from './mock-data'
+import { BBallSpinner } from './components/bball-spinner'
 
-type Props = {
+export default function App({
+  refreshInterval = 1000,
+}: {
   refreshInterval?: number
+}) {
+  const [initialGames, setInitialGames] = useState<Game[]>([])
+
+  useEffect(() => {
+    const fetchInitialGames = async () => {
+      const games = await generateMockGames(10)
+      setInitialGames(games)
+    }
+
+    fetchInitialGames()
+  }, [])
+
+  if (initialGames.length === 0) {
+    return <BBallSpinner />
+  }
+
+  return (
+    <GamesApp refreshInterval={refreshInterval} initialGames={initialGames} />
+  )
 }
 
-export default function App({ refreshInterval = 1000 }: Props) {
-  const [games, setGames] = useState(() => generateMockGames(10))
+function GamesApp({
+  refreshInterval,
+  initialGames,
+}: {
+  refreshInterval?: number
+  initialGames: Game[]
+}) {
+  const [games, setGames] = useState(initialGames)
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [showDetail, setShowDetail] = useState(false)
   const { stdout } = useStdout()
@@ -26,12 +54,23 @@ export default function App({ refreshInterval = 1000 }: Props) {
   )
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setGames((prevGames) => updateGameScores(prevGames))
-    }, refreshInterval)
+    let timeoutId: NodeJS.Timeout | null = null
 
-    return () => clearInterval(interval)
-  }, [refreshInterval])
+    const updateScores = async () => {
+      try {
+        const updatedGames = await updateGameScores(games)
+        setGames(updatedGames)
+      } finally {
+        timeoutId = setTimeout(updateScores, refreshInterval)
+      }
+    }
+
+    timeoutId = setTimeout(updateScores, refreshInterval)
+
+    return () => {
+      if (timeoutId) clearTimeout(timeoutId)
+    }
+  }, [refreshInterval, games])
 
   // Only enable keyboard input if stdin is a TTY (not when piping) and not in test environment
   if (process.stdin.isTTY && process.env.NODE_ENV !== 'test') {
@@ -41,27 +80,43 @@ export default function App({ refreshInterval = 1000 }: Props) {
         if (key.escape || input.toLowerCase() === 'q') {
           setShowDetail(false)
         }
-      } else {
-        // In grid view, handle navigation and selection
-        if (key.leftArrow) {
-          setSelectedIndex((prev) => Math.max(0, prev - 1))
-        } else if (key.rightArrow) {
-          setSelectedIndex((prev) => Math.min(games.length - 1, prev + 1))
-        } else if (key.upArrow) {
-          setSelectedIndex((prev) => {
-            const newIndex = prev - columnsCount
-            return newIndex >= 0 ? newIndex : prev
-          })
-        } else if (key.downArrow) {
-          setSelectedIndex((prev) => {
-            const newIndex = prev + columnsCount
-            return newIndex < games.length ? newIndex : prev
-          })
-        } else if (key.return) {
-          setShowDetail(true)
-        } else if (input.toLowerCase() === 'q') {
-          process.exit(0)
-        }
+        return
+      }
+
+      // In grid view, handle navigation and selection
+      if (key.leftArrow) {
+        setSelectedIndex((prev) => Math.max(0, prev - 1))
+        return
+      }
+
+      if (key.rightArrow) {
+        setSelectedIndex((prev) => Math.min(games.length - 1, prev + 1))
+        return
+      }
+
+      if (key.upArrow) {
+        setSelectedIndex((prev) => {
+          const newIndex = prev - columnsCount
+          return newIndex >= 0 ? newIndex : prev
+        })
+        return
+      }
+
+      if (key.downArrow) {
+        setSelectedIndex((prev) => {
+          const newIndex = prev + columnsCount
+          return newIndex < games.length ? newIndex : prev
+        })
+        return
+      }
+
+      if (key.return) {
+        setShowDetail(true)
+        return
+      }
+
+      if (input.toLowerCase() === 'q') {
+        process.exit(0)
       }
     })
   }
@@ -77,8 +132,10 @@ export default function App({ refreshInterval = 1000 }: Props) {
           🏀 Live Basketball Scores 🏀
         </Text>
       </Box>
+
       <ScoreGrid games={games} selectedIndex={selectedIndex} />
-      {process.stdin.isTTY && process.env.NODE_ENV !== 'test' && (
+
+      {process.stdin.isTTY && (
         <Box justifyContent="center" marginTop={1}>
           <Text color="gray">
             Use arrow keys to navigate • Press ENTER for details • Press Q to

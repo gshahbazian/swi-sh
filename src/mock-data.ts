@@ -56,7 +56,7 @@ function getRandomStartTime(): string {
   return `${hour}:${minutes} PM`
 }
 
-export function generateMockGames(count: number = 10): Game[] {
+export async function generateMockGames(count: number = 10): Promise<Game[]> {
   const games: Game[] = []
   const usedTeams = new Set<string>()
 
@@ -109,10 +109,13 @@ export function generateMockGames(count: number = 10): Game[] {
     games.push(game)
   }
 
+  // Simulate async data fetching
+  await new Promise((resolve) => setTimeout(resolve, 1000))
+
   return games
 }
 
-export function updateGameScores(games: Game[]): Game[] {
+export async function updateGameScores(games: Game[]): Promise<Game[]> {
   return games.map((game) => {
     if (game.status !== 'in-progress') return game
 
