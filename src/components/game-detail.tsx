@@ -1,12 +1,8 @@
 import React from 'react'
 import { Box, Text } from 'ink'
-import { Game } from '../mock-data'
+import { Game } from '../service/mock-data'
 
-interface GameDetailProps {
-  game: Game
-}
-
-export default function GameDetail({ game }: GameDetailProps) {
+export default function GameDetail({ game }: { game: Game }) {
   const getStatusColor = () => {
     switch (game.status) {
       case 'in-progress':
@@ -35,11 +31,13 @@ export default function GameDetail({ game }: GameDetailProps) {
 
   const getScoreDifference = () => {
     if (game.status === 'upcoming') return null
+
     const diff = Math.abs(game.homeTeam.score - game.awayTeam.score)
     const leader =
       game.homeTeam.score > game.awayTeam.score
         ? game.homeTeam.abbreviation
         : game.awayTeam.abbreviation
+
     return diff === 0 ? 'Tied' : `${leader} leads by ${diff}`
   }
 

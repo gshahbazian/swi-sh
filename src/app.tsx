@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Box, Text, useInput, useStdout } from 'ink'
 import ScoreGrid from './components/score-grid'
 import GameDetail from './components/game-detail'
-import { Game, generateMockGames, updateGameScores } from './mock-data'
+import { Game, generateMockGames, updateGameScores } from './service/mock-data'
 import { BBallSpinner } from './components/bball-spinner'
 
 export default function App({

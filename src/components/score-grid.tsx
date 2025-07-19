@@ -1,14 +1,15 @@
 import React from 'react'
 import { Box, useStdout } from 'ink'
 import ScoreCard from './score-card'
-import { Game } from '../mock-data'
+import { Game } from '../service/mock-data'
 
-interface ScoreGridProps {
+export default function ScoreGrid({
+  games,
+  selectedIndex,
+}: {
   games: Game[]
   selectedIndex: number
-}
-
-export default function ScoreGrid({ games, selectedIndex }: ScoreGridProps) {
+}) {
   const { stdout } = useStdout()
   const terminalWidth = stdout.columns || 80
 
@@ -34,6 +35,7 @@ export default function ScoreGrid({ games, selectedIndex }: ScoreGridProps) {
           {row.map((game, colIndex) => {
             const gameIndex = rowIndex * columnsCount + colIndex
             const isSelected = gameIndex === selectedIndex
+
             return (
               <Box key={game.id} marginRight={1}>
                 <ScoreCard game={game} isSelected={isSelected} />

@@ -1,13 +1,14 @@
 import React from 'react'
 import { Box, Text } from 'ink'
-import { Game } from '../mock-data'
+import { Game } from '../service/mock-data'
 
-interface ScoreCardProps {
+export default function ScoreCard({
+  game,
+  isSelected,
+}: {
   game: Game
   isSelected: boolean
-}
-
-export default function ScoreCard({ game, isSelected }: ScoreCardProps) {
+}) {
   const getStatusColor = () => {
     switch (game.status) {
       case 'in-progress':

@@ -1,10 +1,10 @@
-export interface Team {
+export type Team = {
   name: string
   abbreviation: string
   score: number
 }
 
-export interface Game {
+export type Game = {
   id: string
   homeTeam: Team
   awayTeam: Team

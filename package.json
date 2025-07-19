@@ -8,10 +8,9 @@
   },
   "scripts": {
     "build": "esbuild src/cli.tsx --bundle --platform=node --format=esm --outfile=dist/cli.js --external:react --external:ink --external:meow",
-    "dev": "esbuild src/cli.tsx --bundle --platform=node --format=esm --outfile=dist/cli.js --external:react --external:ink --external:meow --watch",
-    "format": "prettier --write .",
+    "test:compile": "esbuild test.tsx --bundle --platform=node --format=esm --outfile=dist/test.js --external:react --external:ink --external:ava --external:ink-testing-library",
     "test": "NODE_ENV=test npm run test:compile && NODE_ENV=test ava",
-    "test:compile": "esbuild test.tsx --bundle --platform=node --format=esm --outfile=dist/test.js --external:react --external:ink --external:ava --external:ink-testing-library"
+    "format": "prettier --write ."
   },
   "files": [
     "dist"
@@ -41,8 +40,7 @@
   "ava": {
     "files": [
       "dist/test.js"
-    ],
-    "timeout": "5s"
+    ]
   },
   "xo": {
     "extends": "xo-react",
